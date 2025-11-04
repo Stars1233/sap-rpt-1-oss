@@ -71,7 +71,7 @@ class SAP_RPT_OSS_Estimator(BaseEstimator, ABC):
                  drop_constant_columns: bool = True,
                  test_chunk_size: int = 1000):
 
-        self.model_size = ModelSize[checkpoint.split('/')[-1].split('.')[0]]
+        self.model_size = ModelSize.base
         self.checkpoint_revision = checkpoint_revision
         self.checkpoint = checkpoint
         self._checkpoint_path = hf_hub_download(repo_id="SAP/sap-rpt-1-oss", filename=checkpoint)
