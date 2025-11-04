@@ -36,6 +36,8 @@ url={https://openreview.net/forum?id=kGMRb4jbTP}
 ## Requirements
 
 This project uses model checkpoints available on https://huggingface.co/sap/sap-rpt-1-oss that are automatically downloaded when running the model.  
+Note that downloading the model checkpoints requires logging in to Hugging Face.
+See the [instructions](https://huggingface.co/docs/huggingface_hub/quick-start#authentication) for details.
 
 The requirements are detailed in the `requirements.txt` file for Python 3.11 version.
 
@@ -45,8 +47,7 @@ Local development installation:
 Installation from source:  
 ```pip install git+https://github.com/SAP-samples/sap-rpt-1-oss```
 
-Note that the downloading the model checkpoints requires logging in to Hugging Face.
-See the [instructions](https://huggingface.co/docs/huggingface_hub/quick-start#authentication) for details.
+
 
 ## Basic Usage
 
