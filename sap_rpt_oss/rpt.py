@@ -93,11 +93,11 @@ class SAP_RPT_OSS_Estimator(BaseEstimator, ABC):
             self.dtype = torch.float32
 
         self.model.load_weights(Path(self._checkpoint_path), self.device)
-        self.regression_type = regression_type
+        self.regression_type = "l2"
         self.seed = 42
         self.is_drop_constant_columns = drop_constant_columns
         self.tokenizer = Tokenizer(
-            regression_type=regression_type,
+            regression_type="l2",
             classification_type=classification_type,
             zmq_port=ZMQ_PORT_DEFAULT,  # Only one GPU supported
             random_seed=self.seed,
