@@ -45,6 +45,9 @@ Local development installation:
 Installation from source:  
 ```pip install git+https://github.com/SAP-samples/sap-rpt-1-oss```
 
+Note that the downloading the model checkpoints requires logging in to Hugging Face.
+See the [instructions](https://huggingface.co/docs/huggingface_hub/quick-start#authentication) for details.
+
 ## Basic Usage
 
 The model supports both classification and regression tasks. It accepts input data in the form of a pandas DataFrame or a NumPy array. No preprocessing is required, column names and cell values are automatically embedded using an LLM that is running in the background, and any missing values are handled correctly.
