@@ -69,4 +69,4 @@ class SentenceEmbedder:
         embeddings = embeddings.cpu().numpy()
         if self.dtype != torch.float16:
             embeddings = embeddings.astype('float16')
-        return [embedding.tobytes() for embedding in embeddings]
+        return embeddings
