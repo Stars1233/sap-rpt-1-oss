@@ -37,14 +37,12 @@ class RPT(nn.Module, ModuleUtilsMixin):
             - cross-entropy - class likelihood prediction using cross entropy loss during training
             - clustering - class prediction using similarity between context and query vectors
             - clustering-cosine - class prediction using cosine similarity between context and query vectors
-        attention_implementation: backend for scaled dot product attention: math, efficient.
         checkpointing_segments: number of model's chunks/segments to checkpoint during training to save memory.
     """
     def __init__(self,
                  model_size: ModelSize,
                  regression_type: Literal['reg-as-classif', 'l2'] = 'reg-as-classif',
                  classification_type: Literal['cross-entropy', 'clustering', 'clustering-cosine'] = 'cross-entropy',
-                 attention_implementation='efficient',
                  checkpointing_segments=1,
                  **kwargs):
         super().__init__()
@@ -78,8 +76,6 @@ class RPT(nn.Module, ModuleUtilsMixin):
 
         assert 0 <= checkpointing_segments <= self.config.num_hidden_layers
         self.checkpointing_segments = checkpointing_segments
-
-        self.config.attention_implementation = attention_implementation
 
         self.embeddings = CellEmbeddings(self.config,
                                          regression_type=regression_type,
@@ -362,7 +358,7 @@ class RPT(nn.Module, ModuleUtilsMixin):
             test_preds = test_probas @ label_classes
         else:
             assert target_mean is not None and target_std is not None
-            test_logits = logits[test_mask]
+            test_logits = logits[test_mask].squeeze()
             # rescale prediction to the original scale
             test_preds = (test_logits * target_std + target_mean).cpu().float().numpy()
             test_probas = None

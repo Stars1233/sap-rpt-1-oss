@@ -6,7 +6,6 @@ from typing import Optional, Tuple
 
 import torch
 from torch import nn
-from torch.nn.attention import SDPBackend, sdpa_kernel
 from transformers.models.roberta.modeling_roberta import RobertaIntermediate, RobertaOutput, RobertaSelfOutput
 
 
@@ -115,13 +114,6 @@ class TorchSelfAttention(nn.Module):
 
         self.dropout = config.attention_probs_dropout_prob
 
-        if config.attention_implementation == 'efficient' and torch.cuda.is_available():
-            self.backend = SDPBackend.EFFICIENT_ATTENTION
-        elif config.attention_implementation == 'math' or not torch.cuda.is_available():
-            self.backend = SDPBackend.MATH
-        else:
-            raise ValueError(f"Unknown attention implementation {config.attention_implementation}")
-
     def transpose_for_scores(self, x: torch.Tensor) -> torch.Tensor:
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(new_x_shape)
@@ -136,14 +128,13 @@ class TorchSelfAttention(nn.Module):
         key_layer = self.transpose_for_scores(self.key(hidden_states))
         value_layer = self.transpose_for_scores(self.value(hidden_states))
 
-        with sdpa_kernel(self.backend):
-            attn_output = torch.nn.functional.scaled_dot_product_attention(
-                query_layer,
-                key_layer,
-                value_layer,
-                attn_mask=attention_mask,
-                dropout_p=self.dropout if self.training else 0.0,
-                is_causal=False)
+        attn_output = torch.nn.functional.scaled_dot_product_attention(
+            query_layer,
+            key_layer,
+            value_layer,
+            attn_mask=attention_mask,
+            dropout_p=self.dropout if self.training else 0.0,
+            is_causal=False)
 
         context_layer = attn_output.permute(0, 2, 1, 3).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.config.hidden_size,)
